@@ -6,13 +6,15 @@ import {
     paintRangeImages,
     clearRangeImages,
 } from "./interaction";
-import { create, all } from "mathjs";
+import { create, all, range } from "mathjs";
 import { saveSphere } from "./inspect";
+
+import { genText } from "./text-rendering";
 
 const math = create(all, {});
 
 var radius = 0.5;
-var C;
+//var C;
 var scene;
 var sphereObject;
 
@@ -29,7 +31,7 @@ function openSphericalImages() {
         let P_inter = object.userData.intersection;
         let P_real = object.position;
         if (P_inter == null) return;
-        if (C.distanceTo(P_real) < radius) {
+        if (sphereObject.position.distanceTo(P_real) < radius) {
             const real_pos = get2DCoords(P_real);
             const inter_pos = get2DCoords(P_inter);
             json.push({
@@ -55,7 +57,7 @@ function openSphericalImages() {
 }
 
 function get2DCoords(P) {
-    const V = new THREE.Vector3().subVectors(P, C).normalize();
+    const V = new THREE.Vector3().subVectors(P, sphereObject.position).normalize();
     const phi = math.acos(V.y);
     const theta = math.atan2(V.x, V.z);
     return { x: -theta, y: phi }; // TODO: Check if it is correct
@@ -76,39 +78,52 @@ function createSphere() {
         return;
     }
     const images = Array.from(imagesSelected);
-    C = images[0].position;
-
-    const geometry = new THREE.SphereGeometry(1, 10, 10);
-    const material = new THREE.MeshBasicMaterial({
-        color: 0x000000,
-        wireframe: true,
-        wireframeLinewidth: 0.5,
+    
+    const geometry = new THREE.SphereGeometry(1, 30, 30);
+    const material = new THREE.MeshPhongMaterial({
+        color: 0xaaaaff,
+        transparent: true,
+        opacity: 0.7,
+        specular: 0xffffff,
+        shininess: 120,
+        twosided: true,
+        wireframe: false,
     });
     sphereObject = new THREE.Mesh(geometry, material);
-
+    
     scene.add(sphereObject);
 
     sphereObject.scale.set(radius, radius, radius);
-    sphereObject.position.set(C.x, C.y, C.z);
+    sphereObject.position.set(images[0].position.x, images[0].position.y, images[0].position.z);
+    sphereObject.name = "SphereShape";
+
+    scene.draggableObjects.push(sphereObject);
 
     clearSelection();
     paintRange();
+
+    const groupNameInput = document.getElementById("groupName");
+    const groupName = groupNameInput.value.trim();
+    //var text = genText(groupName, C.x, C.y, C.z);
+
 }
 
 function cancelSphere() {
-    C = null;
     scene.remove(sphereObject);
+    scene.draggableObjects.pop();
+    console.log("Sphere removed", scene.draggableObjects);
     clearSelection();
     sphereObject = null;
     clearRangeImages();
 }
 
 function paintRange() {
+    console.log("Painting range");
     let images = getAllImages();
     let rangeImages = new Set();
     images.forEach((object) => {
         const P = object.position;
-        if (C.distanceTo(P) < radius) {
+        if (sphereObject.position.distanceTo(P) < radius) {
             rangeImages.add(object);
         }
     });
@@ -116,7 +131,7 @@ function paintRange() {
 }
 
 function saveSphereToInspectMode() {
-    saveSphere(C, radius);
+    saveSphere(sphereObject.position, radius);
 }
 
 export {
@@ -126,4 +141,6 @@ export {
     applySphericalRadius,
     setScene,
     saveSphereToInspectMode,
+    paintRange,
+    clearRangeImages,
 };

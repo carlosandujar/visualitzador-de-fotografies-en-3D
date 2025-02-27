@@ -6,6 +6,8 @@ import { loadImages } from "./multiple-image-loader.js";
 import { addInteraction } from "./interaction.js";
 import { createPanel } from "./panel.js";
 import { setScene } from "./inspect.js";
+import { DragControls } from 'three/examples/jsm/controls/DragControls.js';
+import { paintRange, clearRangeImages } from "./sphere.js";
 
 console.time('threeJSLoading');
 
@@ -33,6 +35,23 @@ document.body.appendChild(renderer.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.target.set(0, 0, 0);
+
+scene.draggableObjects = [];
+const dragControls = new DragControls(scene.draggableObjects, camera, renderer.domElement);
+
+dragControls.addEventListener('dragstart', function (event) {
+    console.log("Drag start");
+    controls.enabled = false;
+});
+
+dragControls.addEventListener('dragend', function (event) {
+    controls.enabled = true;
+    console.log("Drag end");
+    if (event.object.name.startsWith("SphereShape")) {
+        clearRangeImages();
+        paintRange();     
+    }
+});
 
 //LIGHTING
 const ambientLight = new THREE.AmbientLight();

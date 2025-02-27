@@ -44,6 +44,39 @@ const folder1 = panel.addFolder("Image Settings");
 
 const infoElement = document.getElementById("info");
 
+var object = null;
+var saveFunction = null;
+
+function clickOnSave() {
+    console.log("clickOnSave", saveFunction);
+    const textModal = document.getElementById("textModal");
+    const groupNameInput = document.getElementById("groupName");
+    const groupName = groupNameInput.value.trim();
+    if (groupName) {
+        saveFunction();
+        textModal.classList.add("hidden");
+        // done with this shape
+        object.Done();
+        const saveGroup = document.getElementById("saveGroup");
+        saveGroup.removeEventListener("click", clickOnSave);
+    } 
+    else    {
+        alert("Please enter a group name.");
+    }
+}
+
+function saveShapeWithName(obj, saveFunc) {
+    object = obj;   
+    saveFunction = saveFunc;
+    // show dialog asking for group name
+    //console.log("saveShapeWithName", saveFunction, object);
+    const textModal = document.getElementById("textModal");
+    const saveGroup = document.getElementById("saveGroup");
+    
+    saveGroup.addEventListener("click", clickOnSave);
+    textModal.classList.remove("hidden");
+}
+
 function createPanel() {
     let mode_settings = {
         "Enter Author Mode (expert)": function () {
@@ -122,7 +155,7 @@ function createPanel() {
             hideFolder("Plane");
             hideFolder("Cylinder");
 
-            setMessage("Select 1 image");
+            setMessage("Select 1 image (right click)");
             setSelectionMode("sphere");
         },
         "Open in 2D viewer": function () {
@@ -130,8 +163,7 @@ function createPanel() {
         },
         Radius: 0.5,
         "Save selection (for Inspect Mode)": function () {
-            saveSphereToInspectMode();
-            this.Done();
+            saveShapeWithName(this, saveSphereToInspectMode);
         },
         Done: function () {
             cancelSphere();
@@ -165,7 +197,7 @@ function createPanel() {
             hideFolder("Sphere");
             hideFolder("Cylinder");
 
-            setMessage("Select 3 images");
+            setMessage("Select 3 images (right click)");
             setSelectionMode("plane");
         },
         "Save selection (for Inspect Mode)": function () {
@@ -210,7 +242,7 @@ function createPanel() {
             hideFolder("Sphere");
             hideFolder("Plane");
 
-            setMessage("Select 2 images");
+            setMessage("Select 2 images (right click)");
             setSelectionMode("cylinder");
         },
         "Open in 2D viewer": function () {

@@ -32,7 +32,7 @@ var authoringMode = true;
 const HOVER_COLOR = 0xccffff;
 const SELECTION_COLOR = 0xd6b4fc;
 const NEUTRAL_COLOR = 0xffffff;
-const NEUTRAL_LINE_COLOR = 0x0000ff;
+const NEUTRAL_LINE_COLOR = 0x00ff00;
 const RANGE_COLOR = 0xfcae1e;
 
 var imagesSelected = new Set();

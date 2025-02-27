@@ -49,6 +49,7 @@ function loadImage(scene, R, t, zoom, image_name, image_loader, totalNumberOfIma
             .translate(0, 0, 1);
         const image_material = new THREE.MeshBasicMaterial({
             map: image_texture,
+            twoSided: true,
         });
         const image_plane = new THREE.Mesh(image_geometry, image_material);
         image_plane.name = image_name;
@@ -62,17 +63,21 @@ function loadImage(scene, R, t, zoom, image_name, image_loader, totalNumberOfIma
         wireFrameObject.name = "wireframe";
         // Center to vertice
         for (let k = 0; k < 4; k++) {
-            const vertice = new THREE.Vector3().fromBufferAttribute(verticePositions, k);
+            const vertice = new THREE.Vector3().fromBufferAttribute(verticePositions, k);   
             const points = [vertice, new THREE.Vector3(0, 0, 0)];
             const geometry = new THREE.BufferGeometry().setFromPoints(points);
-            const material = new THREE.LineBasicMaterial({
-                color: 0x0000ff,  // see NEUTRAL_LINE_COLOR in interaction.js
-                transparent: true,
+            const material = new THREE.LineDashedMaterial({
+                dashSize: 0.02,
+                gapSize: 0.02,
+                scale: 1,
+                color: 0x00ff00,  // see NEUTRAL_LINE_COLOR in interaction.js
+                transparent: false,
                 opacity: 0.5,
-                linewidth: 0.2,
+                //linewidth: 0.02,
             });
             const line = new THREE.Line(geometry, material);
             line.name = "wireframe-line";
+            line.computeLineDistances();
             wireFrameObject.add(line);
         }
         //Image countorn
@@ -85,11 +90,14 @@ function loadImage(scene, R, t, zoom, image_name, image_loader, totalNumberOfIma
             const vertice2 = new THREE.Vector3().fromBufferAttribute(verticePositions, a);
             const points = [vertice1, vertice2];
             const geometry = new THREE.BufferGeometry().setFromPoints(points);
-            const material = new THREE.LineBasicMaterial({
-                color: 0x0000ff,
-                transparent: true,
+            const material = new THREE.LineDashedMaterial({
+                dashSize: 0.03,
+                gapSize: 0.01,
+                scale: 1,
+                color: 0x00ff00,  // see NEUTRAL_LINE_COLOR in interaction.js
+                transparent: false,
                 opacity: 0.5,
-                linewidth: 0.1,
+                //linewidth: 0.02,
             });
             const line = new THREE.Line(geometry, material);
             line.name = "wireframe-line";
@@ -116,8 +124,8 @@ function loadImage(scene, R, t, zoom, image_name, image_loader, totalNumberOfIma
         images.push(image_plane);
         console.log("Images loaded: ", images.length, " out of ", totalNumberOfImages);
         // For some reason, not all images are loaded
-        //if (images.length == totalNumberOfImages) {
-        if (images.length == 417) {
+        if (images.length == totalNumberOfImages) {
+        //if (images.length == 417) {
             setIntersectionPosition(scene);
             console.timeEnd('threeJSLoading');
         }
