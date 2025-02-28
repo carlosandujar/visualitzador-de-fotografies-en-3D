@@ -26,6 +26,9 @@ async function loadImages(scene, images_file, cameras_file) {
         const lines = data.split("\n");
         const num_cameras = lines[1].split(" ")[0]; // TODO
 
+        //const num_cameras = 60; // TODO testing
+
+
         for (let i = 0; i < num_cameras; i++) {
             const line_number = 2 + 5 * i;
 

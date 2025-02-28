@@ -74,6 +74,7 @@ function loadImage(scene, R, t, zoom, image_name, image_loader, totalNumberOfIma
                 transparent: false,
                 opacity: 0.5,
                 //linewidth: 0.02,
+                visible: false,
             });
             const line = new THREE.Line(geometry, material);
             line.name = "wireframe-line";

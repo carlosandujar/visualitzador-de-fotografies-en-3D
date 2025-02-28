@@ -77,7 +77,16 @@ function createPlaneFromPoints(A, B, C) {
         wireframe: true,
         wireframeLinewidth: 0.5,
     });
-    const box = new THREE.Mesh(boxGeometry, boxMaterial);
+    const boxMaterial2 = new THREE.MeshPhongMaterial({
+            color: 0xaaaaff,
+            transparent: true,
+            opacity: 0.7,
+            specular: 0xffffff,
+            shininess: 120,
+            twosided: true,
+            wireframe: false,
+        });
+    const box = new THREE.Mesh(boxGeometry, boxMaterial2);
 
     scene.add(box);
     box.lookAt(focalPoint);
